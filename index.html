@@ -121,6 +121,27 @@
         </div>
     </div>
 
+    <div id="editGroupPopupModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-[80] flex items-center justify-center p-4">
+        <div class="bg-esports-darkPurple border-2 border-sky-400 rounded-2xl max-w-md w-full p-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button type="button" onclick="closeEditGroupPopup()" class="absolute top-3 right-3 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-teko text-3xl font-bold text-sky-400 text-center mb-4">EDIT GROUP</h3>
+            
+            <div class="mb-4">
+                <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Select Group *</label>
+                <select id="editGroupPopupSelect" onchange="onEditGroupPopupSelect()" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani font-bold">
+                    <option value="">-- Select Group --</option>
+                </select>
+            </div>
+            
+            <div id="editGroupPopupFields" class="hidden space-y-4">
+                <div id="editGroupPopupMatches"></div>
+                <button type="button" onclick="saveEditGroupPopup()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">SAVE</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ADMIN PANEL DASHBOARD -->
     <div id="adminDashboard" class="fixed inset-0 bg-black/95 backdrop-blur-lg hidden z-50 overflow-y-auto p-4 md:p-8">
         <div class="max-w-7xl mx-auto space-y-6">
@@ -131,8 +152,14 @@
                 </button>
             </div>
 
+            <div class="flex flex-wrap gap-2 bg-esports-darkPurple border-2 border-esports-yellow p-3 rounded-xl shadow-xl">
+                <button type="button" id="adminTabBtnCode" onclick="switchAdminTab('code')" class="flex-1 bg-esports-yellow text-black font-teko text-2xl font-bold py-2 rounded-lg">CODE</button>
+                <button type="button" id="adminTabBtnGroup" onclick="switchAdminTab('group')" class="flex-1 bg-esports-purple text-white border border-esports-lightPurple font-teko text-2xl font-bold py-2 rounded-lg">GROUP</button>
+                <button type="button" id="adminTabBtnOther" onclick="switchAdminTab('other')" class="flex-1 bg-esports-purple text-white border border-esports-lightPurple font-teko text-2xl font-bold py-2 rounded-lg">OTHER</button>
+            </div>
+
             <!-- ADMIN: MANAGE GROUPS -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-group bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-layer-group mr-2"></i>MANAGE GROUPS
                 </h3>
@@ -160,8 +187,104 @@
                 <div id="adminGroupsList" class="space-y-3"></div>
             </div>
 
+            <!-- ADMIN: GROUP ROOM ID & PASS / GET IDP -->
+            <div class="admin-tab-content admin-tab-group bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+                <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
+                    <i class="fa-solid fa-layer-group mr-2"></i>GROUP: ROOM ID & PASS (GET IDP)
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">GROUP *</label>
+                        <select id="adminGrpRoomGroupSelect" onchange="onGroupRoomSelect()" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani">
+                            <option value="">SELECT GROUP</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Lobby</label>
+                        <select id="adminGrpRoomLobby" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani" disabled><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Time Slot</label>
+                        <select id="adminGrpRoomSlot" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani" disabled><option value="1-3 PM">1-3 PM</option><option value="3-5 PM">3-5 PM</option><option value="7-9 PM">7-9 PM</option><option value="9-11 PM">9-11 PM</option><option value="11-1 AM">11-1 AM</option></select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Match Date</label>
+                        <input type="date" id="adminGrpRoomDate" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani" disabled>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div>
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Match Number *</label>
+                        <select id="adminGrpRoomMatch" onchange="onGroupRoomMatchChange()" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="1">MATCH 1</option><option value="2">MATCH 2</option><option value="3">MATCH 3</option></select>
+                    </div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Room IDP Time</label><input type="text" id="adminGrpRoomIdpTime" maxlength="30" autocomplete="off" placeholder="e.g. 7:45 PM" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Room Start Time</label><input type="text" id="adminGrpRoomStartTime" maxlength="30" autocomplete="off" placeholder="e.g. 8:00 PM" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Room ID</label><input type="text" id="adminGrpRoomId" maxlength="60" autocomplete="off" placeholder="Room ID" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Room Password</label><input type="text" id="adminGrpRoomPass" maxlength="60" autocomplete="off" placeholder="Password" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                </div>
+                <button type="button" onclick="saveGroupRoomDetails()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">SAVE GROUP / ROOM ID & PASS</button>
+            </div>
+
+            <!-- ADMIN: GROUP MATCH RESULTS -->
+            <div class="admin-tab-content admin-tab-group bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+                <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
+                    <i class="fa-solid fa-trophy mr-2"></i>GROUP: UPLOAD & MANAGE MATCH RESULTS
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">GROUP *</label>
+                        <select id="adminGrpResultGroupSelect" onchange="onGroupResultSelect()" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="">SELECT GROUP</option></select>
+                    </div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Lobby</label><select id="adminGrpResultLobby" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option></select></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Time Slot</label><select id="adminGrpResultSlot" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="1-3 PM">1:00 PM - 3:00 PM</option><option value="3-5 PM">3:00 PM - 5:00 PM</option><option value="7-9 PM">7:00 PM - 9:00 PM</option><option value="9-11 PM">9:00 PM - 11:00 PM</option><option value="11-1 AM">11:00 PM - 1:00 AM</option></select></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Match Date</label><input type="date" id="adminGrpResultDate" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Upload .PC Result File(s) *</label><input type="file" id="adminGrpResultPcInput" accept=".pc,application/octet-stream" multiple onchange="stageGroupResultFiles('pc')" class="w-full text-xs text-gray-300 bg-black/50 p-2 border border-esports-lightPurple rounded-lg font-rajdhani"></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Upload Result Photo (JPG / PNG)</label><input type="file" id="adminGrpResultImageInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple onchange="stageGroupResultFiles('image')" class="w-full text-xs text-gray-300 bg-black/50 p-2 border border-esports-lightPurple rounded-lg font-rajdhani"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button type="button" onclick="saveGroupMatchResultPc()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">ADD / REPLACE .PC RESULT</button>
+                    <button type="button" onclick="saveGroupMatchResultImage()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">UPLOAD RESULT PHOTO</button>
+                </div>
+                <p class="text-xs text-gray-400">GROUP select karne par us group ka Join Code automatically result ke saath use hoga.</p>
+            </div>
+
+            <!-- ADMIN: GROUP SLOT LISTS -->
+            <div class="admin-tab-content admin-tab-group bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+                <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
+                    <i class="fa-solid fa-clipboard-list mr-2"></i>GROUP: UPLOAD & MANAGE SLOT LISTS
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">GROUP *</label>
+                        <select id="adminGrpSlotGroupSelect" onchange="onGroupSlotSelect()" class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="">SELECT GROUP</option></select>
+                    </div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Lobby</label><select id="adminGrpSlotLobby" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option></select></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Time Slot</label><select id="adminGrpSlotSlot" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"><option value="1-3 PM">1:00 PM - 3:00 PM</option><option value="3-5 PM">3:00 PM - 5:00 PM</option><option value="7-9 PM">7:00 PM - 9:00 PM</option><option value="9-11 PM">9:00 PM - 11:00 PM</option><option value="11-1 AM">11:00 PM - 1:00 AM</option></select></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Match Date</label><input type="date" id="adminGrpSlotDate" disabled class="w-full bg-black/50 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Upload .PC Slot List File(s)</label><input type="file" id="adminGrpSlotPcInput" accept=".pc,application/octet-stream" multiple onchange="stageGroupSlotFiles('pc')" class="w-full text-xs text-gray-300 bg-black/50 p-2 border border-esports-lightPurple rounded-lg font-rajdhani"></div>
+                    <div><label class="block text-xs font-rajdhani font-bold text-gray-300 uppercase mb-1">Upload Slot List Photo (JPG / PNG)</label><input type="file" id="adminGrpSlotImageInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" multiple onchange="stageGroupSlotFiles('image')" class="w-full text-xs text-gray-300 bg-black/50 p-2 border border-esports-lightPurple rounded-lg font-rajdhani"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <button type="button" onclick="saveGroupSlotList('pc')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">ADD / REPLACE .PC SLOT LIST</button>
+                    <button type="button" onclick="saveGroupSlotList('image')" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-teko text-2xl font-bold py-2 rounded-xl">UPLOAD SLOT LIST PHOTO</button>
+                </div>
+                <p class="text-xs text-gray-400">GROUP select karne par lobby, time slot aur date automatically fill ho jayega.</p>
+            </div>
+
+            <div class="admin-tab-content admin-tab-group bg-esports-darkPurple border-2 border-sky-400 p-6 rounded-xl shadow-xl space-y-4">
+                <h3 class="font-teko text-3xl font-bold text-sky-400 border-b border-esports-lightPurple pb-2">
+                    <i class="fa-solid fa-list-check mr-2"></i>ALL GROUPS (GROUP / ROOM ID / PASS)
+                </h3>
+                <p class="text-xs font-rajdhani text-gray-300">Har group ka room ID / password / time edit karein.</p>
+                <div id="adminGrpRoomsManager" class="space-y-3"></div>
+            </div>
+
             <!-- ADMIN NOTIFICATION ALERT BOX -->
-            <div id="adminAlertNotification" class="hidden bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 border-2 border-amber-400 p-4 rounded-xl text-amber-200 font-rajdhani font-bold flex justify-between items-center shadow-xl">
+            <div id="adminAlertNotification" class="admin-tab-content admin-tab-other hidden bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 border-2 border-amber-400 p-4 rounded-xl text-amber-200 font-rajdhani font-bold flex justify-between items-center shadow-xl">
                 <div class="flex items-center gap-3">
                     <i class="fa-solid fa-bell text-esports-yellow text-2xl animate-bounce"></i>
                     <span id="adminAlertText">NEW PAYMENT SCREENSHOT RECEIVED! Check pending approvals below.</span>
@@ -172,7 +295,7 @@
             </div>
 
             <!-- ADMIN: BOOKED SLOTS & TEAM APPROVALS TABLE WITH CSV EXPORT -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 border-b border-esports-lightPurple pb-3">
                     <h3 class="font-teko text-3xl font-bold text-esports-yellow">
                         <i class="fa-solid fa-users text-amber-400 mr-2"></i>BOOKED SLOTS & PAYMENT APPROVALS
@@ -208,7 +331,7 @@
             </div>
 
             <!-- ADMIN: MULTI-RESULT UPLOAD & MANAGEMENT SECTION -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-code bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-trophy mr-2"></i>UPLOAD & MANAGE MATCH RESULTS
                 </h3>
@@ -278,7 +401,7 @@
             </div>
 
             <!-- ADMIN: SLOT LIST / ROOM ID & PASS / SECRET CODE SECTION -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-code bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-list-check mr-2"></i>SECRET CODE, ROOM ID & PASS (GET IDP)
                 </h3>
@@ -385,7 +508,7 @@
             </div>
 
             <!-- ADMIN: RANK 1 ANNOUNCEMENT MANAGER -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-crown mr-2 text-amber-400"></i>RANK 1 ANNOUNCEMENT
                 </h3>
@@ -428,7 +551,7 @@
             </div>
 
             <!-- ADMIN: FULL DAY SLOT BANNER & IDP SETTINGS -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-clock mr-2"></i>FULL DAY SLOT / TOP BANNER SETTINGS
                 </h3>
@@ -446,7 +569,7 @@
             </div>
 
             <!-- ADMIN: TIME SLOT WHATSAPP COMMUNITY LINKS MANAGER -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-brands fa-whatsapp mr-2 text-emerald-400"></i>TIME SLOT WHATSAPP COMMUNITY LINKS
                 </h3>
@@ -480,7 +603,7 @@
             </div>
 
             <!-- ADMIN: PAYMENT QR CODE UPLOAD -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-qrcode mr-2"></i>CUSTOM PAYMENT QR CODE MANAGER
                 </h3>
@@ -500,7 +623,7 @@
             </div>
 
             <!-- ADMIN: SOCIAL MEDIA LINKS MANAGER -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-share-nodes mr-2"></i>CONTACT & SOCIAL MEDIA LINKS
                 </h3>
@@ -544,7 +667,7 @@
             </div>
 
             <!-- ADMIN EDIT PRIZE POOLS DYNAMICALLY -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-pen-to-square mr-2"></i>EDIT PRIZE POOLS & ENTRY FEES
                 </h3>
@@ -552,7 +675,7 @@
             </div>
 
             <!-- ADMIN: ONE SIGNAL NOTIFICATION SECTION -->
-            <div class="bg-esports-darkPurple border-2 border-emerald-400 p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border-2 border-emerald-400 p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-emerald-400 border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-bell mr-2"></i>SEND PUSH NOTIFICATION (OneSignal)
                 </h3>
@@ -629,7 +752,7 @@
             </div>
 
             <!-- NOTICE CONTROL SECTION FOR ADMIN (TEXT + IMAGE) -->
-            <div class="bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
+            <div class="admin-tab-content admin-tab-other bg-esports-darkPurple border border-esports-yellow p-6 rounded-xl shadow-xl space-y-4">
                 <h3 class="font-teko text-3xl font-bold text-esports-yellow border-b border-esports-lightPurple pb-2">
                     <i class="fa-solid fa-bullhorn mr-2"></i>PUBLISH NOTICE & BANNER IMAGE
                 </h3>
@@ -673,6 +796,143 @@
         let rskFirebaseDb = null;
         let rskFirebaseReady = false;
         // Admin page ko sirf Firebase connection chahiye (viewer wale live listeners nahi).
+        function switchAdminTab(tab) {
+            document.querySelectorAll('.admin-tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-tab-' + tab).forEach(el => el.classList.remove('hidden'));
+            
+            const btnCode = document.getElementById('adminTabBtnCode');
+            const btnGroup = document.getElementById('adminTabBtnGroup');
+            const btnOther = document.getElementById('adminTabBtnOther');
+            
+            [btnCode, btnGroup, btnOther].forEach(btn => {
+                if (!btn) return;
+                btn.classList.remove('bg-esports-yellow', 'text-black');
+                btn.classList.add('bg-esports-purple', 'text-white', 'border', 'border-esports-lightPurple');
+            });
+            
+            const activeBtn = tab === 'code' ? btnCode : tab === 'group' ? btnGroup : btnOther;
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-esports-purple', 'text-white', 'border', 'border-esports-lightPurple');
+                activeBtn.classList.add('bg-esports-yellow', 'text-black');
+            }
+            
+            try { localStorage.setItem('rsk_admin_active_tab', tab); } catch (_) {}
+        }
+
+        function initAdminTabs() {
+            let tab = 'code';
+            try { tab = localStorage.getItem('rsk_admin_active_tab') || 'code'; } catch (_) {}
+            switchAdminTab(tab);
+        }
+
+        function findGroupNameByCode(code) {
+            const groups = Object.values(adminGroups || {});
+            const g = groups.find(x => x && slNormCode(x.joinCode) === slNormCode(code));
+            return g ? g.name : '';
+        }
+
+        async function updateSlotRoomIdPassGroup(code, n) {
+            if (!slRequireAdmin()) return;
+            const r = adminSlotRooms[code]; if (!r) return alert('Ye group ab available nahi hai.');
+            const roomId = (document.getElementById(`slGrpEditRoomId_${code}_${n}`)?.value || '').trim();
+            const roomPass = (document.getElementById(`slGrpEditRoomPass_${code}_${n}`)?.value || '').trim();
+            const idpTime = (document.getElementById(`slGrpEditIdpTime_${code}_${n}`)?.value || '').trim();
+            const startTime = (document.getElementById(`slGrpEditStartTime_${code}_${n}`)?.value || '').trim();
+            if (!slFbOk()) return alert('Realtime database connect nahi hai.');
+            try {
+                await rskFirebaseDb.ref(RSK_SLOT_ROOMS_PATH + '/' + code).update({ ['matches/m' + n]: { roomId, roomPass, idpTime, startTime }, updatedAt: Date.now() });
+                adminSlotRooms[code] = { ...r, updatedAt: Date.now(), matches: { ...(r.matches || {}), ['m' + n]: { roomId, roomPass, idpTime, startTime } } };
+                renderAdminSlotManagers();
+                alert(`${r.slot} • ${r.lobby} • MATCH ${n} update ho gaya.`);
+            } catch (err) { console.error(err); alert('Update nahi ho paya: ' + slErrText(err)); }
+        }
+
+        function openEditGroupPopup(code) {
+            if (!slRequireAdmin()) return;
+            const groupId = Object.keys(adminGroups || {}).find(id => adminGroups[id] && slNormCode(adminGroups[id].joinCode) === slNormCode(code));
+            if (!groupId) return alert('Group nahi mila.');
+            const g = adminGroups[groupId];
+            const modal = document.getElementById('editGroupPopupModal');
+            if (modal) {
+                const sel = document.getElementById('editGroupPopupSelect');
+                const groups = Object.values(adminGroups || {}).filter(x => x && x.id).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
+                sel.innerHTML = '<option value="">-- Select Group --</option>' + groups.map(x =>
+                    `<option value="${esc(x.id)}" ${slNormCode(x.joinCode) === slNormCode(code) ? 'selected' : ''}>${esc(x.name)} • ${esc(x.lobby)} • ${esc(x.slot)} • ${esc(x.date)}</option>`
+                ).join('');
+                document.getElementById('editGroupPopupFields').classList.add('hidden');
+                modal.classList.remove('hidden');
+                onEditGroupPopupSelect();
+            }
+        }
+
+        function onEditGroupPopupSelect() {
+            const groupId = document.getElementById('editGroupPopupSelect')?.value;
+            const g = adminGroups[groupId];
+            if (!g) {
+                document.getElementById('editGroupPopupFields')?.classList.add('hidden');
+                return;
+            }
+            const room = Object.values(adminSlotRooms || {}).find(r => r && slNormCode(r.code) === slNormCode(g.joinCode));
+            const matches = room ? slRoomMatches(room) : [
+                { idpTime: '', startTime: '', roomId: '', roomPass: '' },
+                { idpTime: '', startTime: '', roomId: '', roomPass: '' },
+                { idpTime: '', startTime: '', roomId: '', roomPass: '' }
+            ];
+            const box = document.getElementById('editGroupPopupMatches');
+            if (!box) return;
+            box.innerHTML = matches.map((m, i) => {
+                const d = slDefaultMatchTimes(g.slot, i + 1);
+                const idp = m.idpTime || d.idpTime || '';
+                const start = m.startTime || d.startTime || '';
+                return `<div class="bg-black/40 border border-esports-lightPurple/50 rounded-lg p-3 mb-3">
+                    <p class="font-teko text-xl text-esports-yellow mb-2">MATCH ${i + 1}</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="block text-[10px] font-rajdhani font-bold text-gray-300 uppercase mb-1">IDP Time</label>
+                            <input type="text" id="editPopupIdpTime_${i + 1}" value="${esc(idp)}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani text-sm"></div>
+                        <div><label class="block text-[10px] font-rajdhani font-bold text-gray-300 uppercase mb-1">Start Time</label>
+                            <input type="text" id="editPopupStartTime_${i + 1}" value="${esc(start)}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani text-sm"></div>
+                        <div><label class="block text-[10px] font-rajdhani font-bold text-gray-300 uppercase mb-1">Room ID</label>
+                            <input type="text" id="editPopupRoomId_${i + 1}" value="${esc(m.roomId || '')}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani text-sm"></div>
+                        <div><label class="block text-[10px] font-rajdhani font-bold text-gray-300 uppercase mb-1">Password</label>
+                            <input type="text" id="editPopupRoomPass_${i + 1}" value="${esc(m.roomPass || '')}" class="w-full bg-black/60 border border-esports-lightPurple text-white py-2 px-3 rounded-lg font-rajdhani text-sm"></div>
+                    </div>
+                </div>`;
+            }).join('');
+            document.getElementById('editGroupPopupFields')?.classList.remove('hidden');
+        }
+
+        function closeEditGroupPopup() {
+            document.getElementById('editGroupPopupModal')?.classList.add('hidden');
+        }
+
+        async function saveEditGroupPopup() {
+            if (!slRequireAdmin()) return;
+            if (!slFbOk()) return alert('Firebase connect nahi hai.');
+            const groupId = document.getElementById('editGroupPopupSelect').value;
+            const g = adminGroups[groupId];
+            if (!g) return alert('Group select karein.');
+            const code = slNormCode(g.joinCode);
+            const updates = {};
+            for (let i = 1; i <= 3; i++) {
+                const idpTime = (document.getElementById('editPopupIdpTime_' + i)?.value || '').trim();
+                const startTime = (document.getElementById('editPopupStartTime_' + i)?.value || '').trim();
+                const roomId = (document.getElementById('editPopupRoomId_' + i)?.value || '').trim();
+                const roomPass = (document.getElementById('editPopupRoomPass_' + i)?.value || '').trim();
+                updates[code + '/matches/m' + i] = { idpTime, startTime, roomId, roomPass };
+            }
+            updates[code + '/code'] = code;
+            updates[code + '/lobby'] = g.lobby;
+            updates[code + '/slot'] = g.slot;
+            updates[code + '/date'] = g.date;
+            updates[code + '/updatedAt'] = Date.now();
+            try {
+                await rskFirebaseDb.ref(RSK_SLOT_ROOMS_PATH).update(updates);
+                closeEditGroupPopup();
+                renderAdminSlotManagers();
+                alert('Group details update ho gaye!');
+            } catch (err) { console.error(err); alert('Update nahi ho paya: ' + (err.message || err)); }
+        }
+
         function initRskFirebase() {
             try {
                 if (!window.firebase || !firebase.initializeApp) throw new Error('Firebase SDK load nahi hua.');
@@ -994,6 +1254,7 @@
             populateGroupDropdowns();
             setTimeout(loadOneSignalRestKey, 500);
             setTimeout(loadAvailableCodes, 500);
+            initAdminTabs();
             document.getElementById('adminDashboard').classList.remove('hidden');
         }
 
@@ -2144,6 +2405,37 @@
                     </div>`).join('')
                     : (adminSlotErr.rooms ? '' : '<p class="text-xs text-gray-400">Abhi tak koi secret code set nahi hua hai.</p>'));
             }
+            const gb = document.getElementById('adminGrpRoomsManager');
+            if (gb) {
+                const rooms = Object.values(adminSlotRooms || {}).filter(r => r && r.code).sort((a, b) => String(a.slot).localeCompare(String(b.slot)) || String(a.lobby).localeCompare(String(b.lobby)));
+                if (!rooms.length) {
+                    gb.innerHTML = '<p class="text-xs text-gray-400">Abhi koi group set nahi hua hai.</p>';
+                } else {
+                    gb.innerHTML = rooms.map(r => {
+                        const groupName = findGroupNameByCode(r.code) || r.code;
+                        return `<div class="bg-black/60 border border-esports-lightPurple p-3 rounded-lg space-y-3">
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="min-w-0">
+                                    <p class="text-xs font-bold text-esports-yellow">${esc(r.slot)} • ${esc(r.lobby)}${r.date ? ' • ' + esc(r.date) : ''}</p>
+                                    <p class="text-[10px] text-sky-300">GROUP: <span class="font-mono">${esc(groupName)}</span></p>
+                                </div>
+                                <div class="flex gap-2 shrink-0">
+                                    <button type="button" onclick="openEditGroupPopup('${esc(r.code)}')" class="bg-amber-500 text-black text-xs font-bold px-3 py-1.5 rounded-lg">EDIT GROUP</button>
+                                    <button type="button" onclick="deleteSlotRoom('${esc(r.code)}')" class="bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg">DELETE</button>
+                                </div>
+                            </div>
+                            ${slRoomMatches(r).map((m, i) => `<div class="grid grid-cols-1 sm:grid-cols-6 gap-2 items-center">
+                                <span class="font-teko text-xl text-esports-yellow leading-none">MATCH ${i + 1}</span>
+                                <input type="text" id="slGrpEditIdpTime_${esc(r.code)}_${i + 1}" value="${esc(m.idpTime)}" placeholder="IDP Time" class="w-full bg-black/60 border border-esports-lightPurple rounded px-2 py-1.5 text-white text-sm">
+                                <input type="text" id="slGrpEditStartTime_${esc(r.code)}_${i + 1}" value="${esc(m.startTime)}" placeholder="Start Time" class="w-full bg-black/60 border border-esports-lightPurple rounded px-2 py-1.5 text-white text-sm">
+                                <input type="text" id="slGrpEditRoomId_${esc(r.code)}_${i + 1}" value="${esc(m.roomId)}" placeholder="Room ID" class="w-full bg-black/60 border border-esports-lightPurple rounded px-2 py-1.5 text-white text-sm">
+                                <input type="text" id="slGrpEditRoomPass_${esc(r.code)}_${i + 1}" value="${esc(m.roomPass)}" placeholder="Password" class="w-full bg-black/60 border border-esports-lightPurple rounded px-2 py-1.5 text-white text-sm">
+                                <button type="button" onclick="updateSlotRoomIdPassGroup('${esc(r.code)}', ${i + 1})" class="bg-esports-yellow hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg">UPDATE</button>
+                            </div>`).join('')}
+                        </div>`;
+                    }).join('');
+                }
+            }
             if (lb) {
                 const items = slAllLists();
                 const lerr = adminSlotErr.lists ? `<p class="text-xs font-bold text-red-400 mb-2">${esc(adminSlotErr.lists)}</p>` : '';
@@ -2682,7 +2974,7 @@
                         <div class="flex flex-wrap gap-2">
                             <button type="button" onclick="copyGroupLink('${esc(link)}')" class="bg-sky-500 hover:bg-sky-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg">COPY LINK</button>
                             <button type="button" onclick="savePointTableToViewers('${esc(g.id)}')" class="bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg">SAVE POINT TABLE</button>
-                            <button type="button" onclick="editGroupName('${esc(g.id)}')" class="bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg">EDIT</button>
+                            <button type="button" onclick="openEditGroupPopup('${esc(g.joinCode)}')" class="bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold px-3 py-1.5 rounded-lg">EDIT</button>
                             <button type="button" onclick="deleteGroup('${esc(g.id)}')" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">DELETE</button>
                         </div>
                     </div>
@@ -2804,8 +3096,137 @@
             }
         }
 
+        function onGroupRoomSelect() {
+            const id = document.getElementById('adminGrpRoomGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return;
+            document.getElementById('adminGrpRoomLobby').value = g.lobby || 'L1';
+            document.getElementById('adminGrpRoomSlot').value = g.slot || '1-3 PM';
+            document.getElementById('adminGrpRoomDate').value = g.date || '';
+            onGroupRoomMatchChange();
+        }
+
+        function onGroupRoomMatchChange() {
+            const id = document.getElementById('adminGrpRoomGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return;
+            const room = Object.values(adminSlotRooms || {}).find(r => r && r.lobby === g.lobby && r.slot === g.slot && r.date === g.date);
+            const n = Number(document.getElementById('adminGrpRoomMatch')?.value) || 1;
+            const m = room ? (slRoomMatches(room)[n - 1] || {}) : {};
+            const d = slDefaultMatchTimes(g.slot, n);
+            document.getElementById('adminGrpRoomIdpTime').value = m.idpTime || d.idpTime || '';
+            document.getElementById('adminGrpRoomStartTime').value = m.startTime || d.startTime || '';
+            document.getElementById('adminGrpRoomId').value = m.roomId || '';
+            document.getElementById('adminGrpRoomPass').value = m.roomPass || '';
+        }
+
+        async function saveGroupRoomDetails() {
+            const id = document.getElementById('adminGrpRoomGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return alert('Kripya GROUP select karein!');
+            document.getElementById('adminRoomGroupSelect').value = id;
+            document.getElementById('adminSlRoomLobby').value = g.lobby;
+            document.getElementById('adminSlRoomSlot').value = g.slot;
+            document.getElementById('adminSlRoomDate').value = g.date;
+            document.getElementById('adminSlRoomMatch').value = document.getElementById('adminGrpRoomMatch').value;
+            document.getElementById('adminSlRoomCode').value = '';
+            document.getElementById('adminSlRoomIdpTime').value = document.getElementById('adminGrpRoomIdpTime').value.trim();
+            document.getElementById('adminSlRoomStartTime').value = document.getElementById('adminGrpRoomStartTime').value.trim();
+            document.getElementById('adminSlRoomId').value = document.getElementById('adminGrpRoomId').value.trim();
+            document.getElementById('adminSlRoomPass').value = document.getElementById('adminGrpRoomPass').value.trim();
+            await saveSlotRoomDetails();
+        }
+
+        function onGroupResultSelect() {
+            const id = document.getElementById('adminGrpResultGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return;
+            document.getElementById('adminGrpResultLobby').value = g.lobby || 'L1';
+            document.getElementById('adminGrpResultSlot').value = g.slot || '1-3 PM';
+            document.getElementById('adminGrpResultDate').value = g.date || '';
+            const shared = document.getElementById('adminResultGroupSelect');
+            if (shared) shared.value = id;
+        }
+
+        function stageGroupResultFiles(type) {
+            const sourceId = type === 'pc' ? 'adminGrpResultPcInput' : 'adminGrpResultImageInput';
+            const targetId = type === 'pc' ? 'adminResultPcInput' : 'adminResultImageInput';
+            const source = document.getElementById(sourceId), target = document.getElementById(targetId);
+            if (!source || !target || !source.files?.length) return;
+            try {
+                const dt = new DataTransfer();
+                Array.from(source.files).forEach(f => dt.items.add(f));
+                target.files = dt.files;
+                stageResultFiles(type);
+                source.value = '';
+            } catch (e) {
+                console.error(e);
+                alert('File stage nahi ho payi. Dobara choose karein.');
+            }
+        }
+
+        async function saveGroupMatchResultPc() {
+            const id = document.getElementById('adminGrpResultGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return alert('Kripya GROUP select karein!');
+            document.getElementById('adminResultGroupSelect').value = id;
+            document.getElementById('adminResultLobbySelect').value = g.lobby;
+            document.getElementById('adminResultSlotSelect').value = g.slot;
+            document.getElementById('adminResultDateInput').value = g.date;
+            document.getElementById('adminResultCodeInput').value = '';
+            await saveMatchResultPc();
+        }
+
+        async function saveGroupMatchResultImage() {
+            const id = document.getElementById('adminGrpResultGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return alert('Kripya GROUP select karein!');
+            document.getElementById('adminResultGroupSelect').value = id;
+            document.getElementById('adminResultLobbySelect').value = g.lobby;
+            document.getElementById('adminResultSlotSelect').value = g.slot;
+            document.getElementById('adminResultDateInput').value = g.date;
+            document.getElementById('adminResultCodeInput').value = '';
+            await saveMatchResultImage();
+        }
+
+        function onGroupSlotSelect() {
+            const id = document.getElementById('adminGrpSlotGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return;
+            document.getElementById('adminGrpSlotLobby').value = g.lobby || 'L1';
+            document.getElementById('adminGrpSlotSlot').value = g.slot || '1-3 PM';
+            document.getElementById('adminGrpSlotDate').value = g.date || '';
+        }
+
+        function stageGroupSlotFiles(type) {
+            const sourceId = type === 'pc' ? 'adminGrpSlotPcInput' : 'adminGrpSlotImageInput';
+            const targetId = type === 'pc' ? 'adminSlPcInput' : 'adminSlImageInput';
+            const source = document.getElementById(sourceId), target = document.getElementById(targetId);
+            if (!source || !target || !source.files?.length) return;
+            try {
+                const dt = new DataTransfer();
+                Array.from(source.files).forEach(f => dt.items.add(f));
+                target.files = dt.files;
+                stageSlotFiles(type);
+                source.value = '';
+            } catch (e) {
+                console.error(e);
+                alert('File stage nahi ho payi. Dobara choose karein.');
+            }
+        }
+
+        async function saveGroupSlotList(type) {
+            const id = document.getElementById('adminGrpSlotGroupSelect')?.value || '';
+            const g = adminGroups[id];
+            if (!g) return alert('Kripya GROUP select karein!');
+            document.getElementById('adminSlLobby').value = g.lobby;
+            document.getElementById('adminSlSlot').value = g.slot;
+            document.getElementById('adminSlDateInput').value = g.date;
+            await saveSlotList(type);
+        }
+
         function populateGroupDropdowns() {
-            const selects = ['adminResultGroupSelect', 'adminRoomGroupSelect', 'adminSlotGroupSelect'];
+            const selects = ['adminResultGroupSelect', 'adminRoomGroupSelect', 'adminSlotGroupSelect', 'adminGrpRoomGroupSelect', 'adminGrpResultGroupSelect', 'adminGrpSlotGroupSelect'];
             const groups = Object.values(adminGroups || {}).filter(g => g && g.id).sort((a, b) => (Number(b.createdAt) || 0) - (Number(a.createdAt) || 0));
             selects.forEach(id => {
                 const el = document.getElementById(id);
